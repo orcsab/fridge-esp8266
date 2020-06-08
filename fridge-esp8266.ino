@@ -44,6 +44,7 @@ void loop() {
 
   SN::addMetric ("867efbcf1bcd1c10a000fd1f0a4bcb92", "u_fridge", "u_temp", sensors.getTempCByIndex(0));
 
+  Serial.println("blinking");
   digitalWrite(LED_BUILTIN, LOW);
   delay(250);
   digitalWrite(LED_BUILTIN, HIGH);

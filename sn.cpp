@@ -17,7 +17,7 @@ char SN::jsonBuf[SN::jsonBufSize];
 
 WiFiUDP ntpUDP;
 // const long utcOffsetInSeconds = 28800; // Singapore
-const long utcOffsetInSeconds = 0; // GMT 
+const long utcOffsetInSeconds = 0; // GMT
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 /* addMetric
@@ -55,8 +55,8 @@ void SN::addMetric (const char *sysId, const char *table, const char *metric, fl
           "Accepts: application/json\r\n" +
           "Authorization: Basic " + CREDBASE64 + "\r\n" +
           "\r\n" +
-          json +
-          "Connection: close\r\n\r\n";  // is this needed??
+          json;
+//          "Connection: close\r\n\r\n";  // is this needed??
 
   Serial.println("sending request:");
   Serial.println(post);
@@ -82,13 +82,10 @@ const char *SN::buildMetricJson (const char *sysId,
                                  float value)
 {
   timeClient.update();
-  String timestamp = "2020-06-08T";
-  timestamp += timeClient.getHours();
-  timestamp += ":";
-  timestamp += timeClient.getMinutes();
-  timestamp += ":";
-  timestamp += timeClient.getSeconds();
-  timestamp += "Z";
+
+  char time[24];
+  sprintf(time, "%04d-%02d-%02dT%02d:%02d:%02dZ",
+          2020, 6, 8, timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds());
 
   String json ("{\r\n");
   json += "\"seriesRef\": {\r\n";
@@ -98,7 +95,7 @@ const char *SN::buildMetricJson (const char *sysId,
   json += "},\r\n";
   json += "\"values\":  [\r\n";
   json += "{\r\n";
-  json += "\"timestamp\": \"" + timestamp + "\",\r\n";
+  json += "\"timestamp\": \"" + String(time) + "\",\r\n";
   json += "\"value\": " + String(value) + "\r\n";
   json += "}\r\n";
   json += "]\r\n";

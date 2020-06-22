@@ -42,11 +42,11 @@ void loop() {
   Serial.print("*C");
   Serial.println();
 
-  SN::addMetric ("867efbcf1bcd1c10a000fd1f0a4bcb92", "u_fridge", "u_temp", sensors.getTempCByIndex(0));
+  SN::addMetric ("71a872a51b6990107d7bedf32a4bcbff", "u_fridge", "u_temp", sensors.getTempCByIndex(0));
 
   Serial.println("blinking");
   digitalWrite(LED_BUILTIN, LOW);
   delay(250);
   digitalWrite(LED_BUILTIN, HIGH);
-  delay(250);
+  delay(10000);
 }

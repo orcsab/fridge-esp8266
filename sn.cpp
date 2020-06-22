@@ -4,6 +4,8 @@
 #include <WiFiClientSecure.h>
 #include <NTPClient.h>
 #include <WifiUdp.h>
+#include <sstream>
+#include <time.h>
 
 #include "sn.h"
 #include "private.h"
@@ -11,7 +13,7 @@
 const char *SN::fingerprint = "960164aa4d4a99c6d42e5ef9f6f0678bbd1586b5";
 const char *SN::host = "drummonds.service-now.com";
 const int SN::httpsPort = 443;
-const char *SN::url = "/api/now/v1/clotho/put?align_time";
+const char *SN::url = "/api/now/v1/clotho/put";
 const int SN::jsonBufSize = 512;
 char SN::jsonBuf[SN::jsonBufSize];
 
@@ -46,17 +48,19 @@ void SN::addMetric (const char *sysId, const char *table, const char *metric, fl
   Serial.println(url);
 
   const char *json = buildMetricJson(sysId, table, metric, value);
+  char length[8];
+  sprintf (length, "%d", strlen(json));
 
   String post;
   post = String("POST ") + url + " HTTP/1.1\r\n" +
           "Host: " + host + "\r\n" +
-          "User-Agent: fridge-esp8266\r\n" +
-          "Content-Type: application/json\r\n" +
-          "Accepts: application/json\r\n" +
           "Authorization: Basic " + CREDBASE64 + "\r\n" +
+          "User-Agent: fridge-esp8266\r\n" +
+//          "Accept: */*\r\n" +
+          "Content-Type: application/json\r\n" +
+          "Content-Length: " + length + "\r\n" +
           "\r\n" +
           json;
-//          "Connection: close\r\n\r\n";  // is this needed??
 
   Serial.println("sending request:");
   Serial.println(post);
@@ -83,9 +87,20 @@ const char *SN::buildMetricJson (const char *sysId,
 {
   timeClient.update();
 
+
   char time[24];
-  sprintf(time, "%04d-%02d-%02dT%02d:%02d:%02dZ",
-          2020, 6, 8, timeClient.getHours(), timeClient.getMinutes(), timeClient.getSeconds());
+
+//  sprintf(time, "%04d-%02d-%02dT%02d:%02d:%02d",
+//          2020, 6, 22, timeClient.getHours(),
+//          timeClient.getMinutes(), timeClient.getSeconds());
+
+  time_t now = timeClient.getEpochTime();
+  struct tm *ts;
+  ts = localtime(&now);
+  sprintf(time, "%04d-%02d-%02dT%02d:%02d:%02d",
+          ts->tm_year+1900, ts->tm_mon+1, ts->tm_mday, timeClient.getHours(),
+          timeClient.getMinutes(), timeClient.getSeconds());
+
 
   String json ("{\r\n");
   json += "\"seriesRef\": {\r\n";

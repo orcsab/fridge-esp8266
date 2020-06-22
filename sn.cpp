@@ -11,7 +11,7 @@
 #include "private.h"
 
 const char *SN::fingerprint = "960164aa4d4a99c6d42e5ef9f6f0678bbd1586b5";
-const char *SN::host = "drummonds.service-now.com";
+const char *SN::host = SNINSTANCE; // defined in private.h
 const int SN::httpsPort = 443;
 const char *SN::url = "/api/now/v1/clotho/put";
 const int SN::jsonBufSize = 512;
@@ -56,7 +56,6 @@ void SN::addMetric (const char *sysId, const char *table, const char *metric, fl
           "Host: " + host + "\r\n" +
           "Authorization: Basic " + CREDBASE64 + "\r\n" +
           "User-Agent: fridge-esp8266\r\n" +
-//          "Accept: */*\r\n" +
           "Content-Type: application/json\r\n" +
           "Content-Length: " + length + "\r\n" +
           "\r\n" +

@@ -58,6 +58,7 @@ void SN::addMetric (const char *sysId, const char *table, const char *metric, fl
           "User-Agent: fridge-esp8266\r\n" +
           "Content-Type: application/json\r\n" +
           "Content-Length: " + length + "\r\n" +
+          "Connection: close\r\n" +
           "\r\n" +
           json;
 

@@ -14,6 +14,7 @@
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors (&oneWire);
+unsigned long lastMillis = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -35,6 +36,14 @@ void setup() {
 }
 
 void loop() {
+  unsigned long currMillis = millis();
+  if (currMillis - lastMillis < 30000)
+    return;
+  lastMillis = currMillis;
+
+  Serial.println("processing");
+  digitalWrite(LED_BUILTIN, LOW);
+
   sensors.requestTemperatures();
 
   Serial.print("TEMPERATURE = ");
@@ -42,11 +51,8 @@ void loop() {
   Serial.print("*C");
   Serial.println();
 
-  SN::addMetric ("71a872a51b6990107d7bedf32a4bcbff", "u_fridge", "u_temp", sensors.getTempCByIndex(0));
+  SN::addMetric ("71a872a51b6990107d7bedf32a4bcbff", "u_fridge", "u_temperature", sensors.getTempCByIndex(0));
 
-  Serial.println("blinking");
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(250);
+  Serial.println("done processing");
   digitalWrite(LED_BUILTIN, HIGH);
-  delay(60000);
 }
